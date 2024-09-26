@@ -1,0 +1,35 @@
+.m_nav {
+    width: 100%;
+    background-color: bisque;
+    height: max-content;
+
+    .m_nav_conatiner {
+        display: flex;
+        align-items: center;
+        width: 90%;
+        justify-content: space-between;
+        margin: 0 auto;
+    }
+
+    .m_logo img {
+        width: 100px;
+        height: 80px;
+        cursor: pointer;
+    }
+
+    .m_signinbtn button {
+       border: none;
+        padding: 8px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        display: flex;
+        color: white;
+        cursor: pointer;
+        background-color: black;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+    }
+
+
+}
