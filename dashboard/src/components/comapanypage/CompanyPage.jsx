@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./style.css";
 import ProfileIconBar from "../profileiconbar/ProfileIconBar";
 
@@ -8,8 +8,7 @@ const CompanyPage = () => {
   const [debounceTimeout, setDebounceTimeout] = useState(null);
   const [tableShow, setTableShow] = useState(false);
 
- 
-
+  // Fetch companies based on search term
   const fetchCompanies = async (search = "") => {
     try {
       const response = await fetch(
@@ -19,15 +18,27 @@ const CompanyPage = () => {
         throw new Error("Failed to fetch companies");
       }
       const data = await response.json();
+
+      // Check if search term matches any company name
+      if (
+        search.length > 0 ||
+        (data.length === 1 &&
+          data[0].companyName.toLowerCase() === search.toLowerCase())
+      ) {
+        setTableShow(true);
+      } else {
+        setTableShow(false);
+      }
+
       setCompanies(data);
     } catch (error) {
       console.error("Error fetching companies:", error);
     }
   };
 
+  // Handle search input with debounce
   const handleSearch = (e) => {
     const value = e.target.value;
-    setTableShow(prev => !prev);
     setSearchTerm(value);
 
     // Clear the previous timeout if user keeps typing
@@ -41,7 +52,6 @@ const CompanyPage = () => {
     }, 500);
 
     setDebounceTimeout(newTimeout);
-    fetchCompanies();
   };
 
   return (

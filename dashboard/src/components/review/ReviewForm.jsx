@@ -39,7 +39,7 @@ const ReviewForm = () => {
           defaultPayments: false,
           defaultBy: "",
         });
-        setIsDialogOpen(false); // Close dialog on successful submission
+        setIsDialogOpen(false);
       } else {
         toast.error("Failed to submit review");
       }
@@ -132,73 +132,80 @@ const ReviewForm = () => {
           color: #000;
         }
       `}</style>
-      
+
       {/* Trigger Button to open the dialog */}
       <button onClick={openDialog} className="open-dialog-button">
         Add Review Form
       </button>
 
-      {isDialogOpen && (
-        <div className="card">
-          <button className="close-btn" onClick={closeDialog}>
-            ×
-          </button>
-          <div className="card-header">
-            <h2>Submit Review</h2>
-          </div>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="companyName">Company Name</label>
-              <input
-                id="companyName"
-                name="companyName"
-                type="text"
-                value={formData.companyName}
-                onChange={handleChange}
-                required
-              />
+     
+        <div className="m_addicon">
+          {/* <button onClick={openDialog} className="open-dialog-button">
+          Add Review Form
+        </button> */}
+
+          {isDialogOpen && (
+            <div className="card">
+              <button className="close-btn" onClick={closeDialog}>
+                ×
+              </button>
+              <div className="card-header">
+                <h2>Submit Review</h2>
+              </div>
+              <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label htmlFor="companyName">Company Name</label>
+                  <input
+                    id="companyName"
+                    name="companyName"
+                    type="text"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="paymentCycle">Payment Cycle</label>
+                  <input
+                    id="paymentCycle"
+                    name="paymentCycle"
+                    type="text"
+                    value={formData.paymentCycle}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="form-group checkbox-group">
+                  <input
+                    id="defaultPayments"
+                    name="defaultPayments"
+                    type="checkbox"
+                    checked={formData.defaultPayments}
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="defaultPayments">Default Payments</label>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="defaultBy">Default By</label>
+                  <input
+                    id="defaultBy"
+                    name="defaultBy"
+                    type="date"
+                    value={formData.defaultBy}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <button type="submit" className="submit-button">
+                  Submit Review
+                </button>
+              </form>
             </div>
-            <div className="form-group">
-              <label htmlFor="paymentCycle">Payment Cycle</label>
-              <input
-                id="paymentCycle"
-                name="paymentCycle"
-                type="text"
-                value={formData.paymentCycle}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-group checkbox-group">
-              <input
-                id="defaultPayments"
-                name="defaultPayments"
-                type="checkbox"
-                checked={formData.defaultPayments}
-                onChange={handleChange}
-              />
-              <label htmlFor="defaultPayments">Default Payments</label>
-            </div>
-            <div className="form-group">
-              <label htmlFor="defaultBy">Default By</label>
-              <input
-                id="defaultBy"
-                name="defaultBy"
-                type="date"
-                value={formData.defaultBy}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <button type="submit" className="submit-button">
-              Submit Review
-            </button>
-          </form>
+          )}
         </div>
-      )}
+      
     </>
   );
 };
 
 export default ReviewForm;
-

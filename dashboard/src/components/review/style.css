@@ -8,3 +8,18 @@
     }
 }
 
+.open-dialog-button{
+    gap: 1rem;
+    font-weight: 600;
+    width: 150px;
+    padding: 10px;
+    font-size: 12px;
+    border-radius: 30px;
+    background-color: #4285F4;
+    color: black;
+    letter-spacing: 1px;
+}
+
+.m_addicon {
+    width: 50%;
+}

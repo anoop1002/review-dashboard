@@ -1,11 +1,19 @@
-import React, { useState } from "react";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import React, { useState, useEffect } from "react";
+
 import "./style.css";
 import { Link } from "react-router-dom";
-import {toast,Bounce } from 'react-toastify';
+import { toast, Bounce } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import app from "../../../firebase";
+import googleImg from "../../assets/google-Img.png";
 
-
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
 
 const SignUp = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -17,10 +25,11 @@ const SignUp = ({ onClose }) => {
   });
   const [error, setError] = useState("");
   const [register, setRegister] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
   const [showPasswordField, setShowPasswordField] = useState(false);
 
   const navigate = useNavigate();
-
+  const auth = getAuth(app);
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -65,17 +74,20 @@ const SignUp = ({ onClose }) => {
       //     setError("An unexpected error occurred.");
       //   }
       // }
+      
       if (response.status === 200) {
-       
-         navigate("/companyPage");
-     
-        setShowPasswordField(false);  
-        
+        const result = await response.json();
+        console.log("Result", result);
+
+         // Store user data in local storage
+         localStorage.setItem("userData", JSON.stringify(result));
+        navigate("/companyPage");
+
+        setShowPasswordField(false);
       } else if (response.status === 400) {
-        setShowPasswordField(true)
-      }
-      else{
-        console.log("Data can not be fetched")
+        setShowPasswordField(true);
+      } else {
+        console.log("Data can not be fetched");
       }
     } catch (error) {
       toast.error(error, {
@@ -88,12 +100,73 @@ const SignUp = ({ onClose }) => {
         progress: undefined,
         theme: "light",
         transition: Bounce,
-        });
+      });
       console.error("Error:", error);
       setError("An error occurred. Please try again.");
     }
-    
   };
+
+  // const handleRegister = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:5000/registerUser", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(formData),
+  //     });
+
+  //     if (response.status === 200) {
+
+  //       const result = await response.json();
+  //       console.log("Result", result);
+  //       toast.success(result.message, {
+  //         position: "top-center",
+  //         autoClose: 5000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //         progress: undefined,
+  //         theme: "light",
+  //         transition: Bounce,
+  //       });
+  //       setShowPasswordField(false);
+  //       setRegister(result);
+  //       console.log("Registration successful:", result);
+  //     } else {
+  //       const result = await response.text();
+  //       setError("Registration failed. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     toast.error(error, {
+  //       position: "top-center",
+  //       autoClose: 5000,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //       theme: "light",
+  //       transition: Bounce,
+  //     });
+  //     console.error("Error:", error);
+  //     setError("An error occurred during registration.");
+  //   }
+  // };
+
+  // Send the token to the backend to authenticate the user
+  // const handleGoogleSuccess = (response) => {
+  //   console.log("Google Login Success:", response);
+  //   const token = response.credential;
+
+  // };
+
+  // const handleGoogleFailure = (error) => {
+  //   console.log("Google Login Failed:", error);
+  // };
+
+  //google login
 
   const handleRegister = async () => {
     try {
@@ -104,10 +177,9 @@ const SignUp = ({ onClose }) => {
         },
         body: JSON.stringify(formData),
       });
-
       if (response.status === 200) {
-        
         const result = await response.json();
+        console.log("Result", result);
         toast.success(result.message, {
           position: "top-center",
           autoClose: 5000,
@@ -118,7 +190,7 @@ const SignUp = ({ onClose }) => {
           progress: undefined,
           theme: "light",
           transition: Bounce,
-          });
+        });
         setShowPasswordField(false);
         setRegister(result);
         console.log("Registration successful:", result);
@@ -137,22 +209,37 @@ const SignUp = ({ onClose }) => {
         progress: undefined,
         theme: "light",
         transition: Bounce,
-        });
+      });
       console.error("Error:", error);
       setError("An error occurred during registration.");
     }
   };
 
-  // Send the token to the backend to authenticate the user
-  const handleGoogleSuccess = (response) => {
-    console.log("Google Login Success:", response);
-    const token = response.credential;
-    console.log("Token: ", token);
+  const provider = new GoogleAuthProvider();
+   
+  const onGooglePopUp = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        console.log("user",user);
+        if (user) {
+          navigate("/companyPage");
+        }
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+      });
   };
 
-  const handleGoogleFailure = (error) => {
-    console.log("Google Login Failed:", error);
-  };
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       setLoggedIn(true);
+  //     } else {
+  //       setLoggedIn(false);
+  //     }
+  //   });
+  // }, [auth]);
 
   return (
     <>
@@ -269,13 +356,12 @@ const SignUp = ({ onClose }) => {
               </div>
 
               <div className="m_googlebtn">
-                <GoogleOAuthProvider clientId="518608806041-5s25kt81dl83fpqvolfdol12lkpeq6ip.apps.googleusercontent.com">
-                  <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={handleGoogleFailure}
-                    useOneTap
-                  />
-                </GoogleOAuthProvider>
+                <button onClick={onGooglePopUp}>
+                  <span>
+                    <img src={googleImg} alt="googleIcon" />
+                  </span>
+                  Login With Google
+                </button>
               </div>
             </div>
           </section>
