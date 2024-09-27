@@ -16,57 +16,80 @@ const PORT = 5000;
 // checkEmail Endpoint
 
 app.post('/checkEmail', async (req, res) => {
-    console.log("enter")
-    const  {email}  = req.body;
-    console.log("Email:",email);
+  try {
+    const { email } = req.body;
+    console.log("Email:", email);
     const user = await User.findOne({ email });
-    console.log("user",user)
+    
     if (user) {
-        return res.status(200).json({ message: 'Login successfully' });
+      // If user exists, return the user data along with a success message
+      return res.status(200).json({ 
+        message: 'Login successfully', 
+        user: {
+          email: user.email,
+          name: user.name,
+          companyName: user.companyName,
+          designation: user.designation,
+        } 
+      });
     } else {
-       return res.status(400).json({ message: 'Email not registered' });
+      // If no user is found, return an error message
+      return res.status(400).json({ message: 'Email not registered' });
     }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return res.status(500).json({ message: 'Server error' });
+  }
 });
+
 
 
 
 // Sample Registration Endpoint
 
 app.post("/registerUser", async (req, res) => {
-    const { email, name, companyName, designation, password } = req.body;
-    
-    console.log(email, name, companyName, designation, password )
-    // Basic validation
-    if (!email || !name || !companyName || !designation || !password) {
-        return res.status(400).json({ message: "All fields are required" });
+  const { email, name, companyName, designation, password } = req.body;
+
+  console.log(email, name, companyName, designation)
+  // Basic validation
+  if (!email || !name || !companyName || !designation || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  try {
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    try {
-        
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: "User already exists" });
-        }
 
-        
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({
-            email,
-            name,
-            companyName,
-            designation,
-            password: hashedPassword,
-        });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
+      email,
+      name,
+      companyName,
+      designation,
+      password: hashedPassword,
+    });
 
-        await newUser.save();
-        res.status(200).json({ message: "User registered successfully" });
-    } catch (error) {
-        console.error("Error registering user:", error);
-        if (error.code === 11000) {
-            return res.status(400).json({ message: "Email already exists" });
-        }
-        res.status(500).json({ message: "Server error" });
+    await newUser.save();
+    res.status(200).json({
+      message: "User registered successfully", user: {
+        companyName,
+        name,
+        designation,
+        email  
+       
+      }
+    });
+  } catch (error) {
+    console.error("Error registering user:", error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Email already exists" });
     }
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 
@@ -141,13 +164,13 @@ app.get('/companies/search', async (req, res) => {
   try {
     const { name } = req.query;
     let query = {};
-    
+
     if (name) {
       query.companyName = { $regex: name, $options: 'i' };
     }
 
     const companies = await Review.find(query).select('companyName paymentCycle defaultPayments defaultBy');
-    
+
     res.json(companies);
   } catch (error) {
     console.error("Error searching companies:", error);
