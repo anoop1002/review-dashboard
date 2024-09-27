@@ -11,8 +11,11 @@
         margin: 0 auto;
     }
 
-    .m_profile_btn{
-        color: black;
+    .m_profile_icon{
+       display:flex ;
+       gap: 1rem;
+       align-items: center;
+       justify-content: center;
         font-size: 25px;
     }
 

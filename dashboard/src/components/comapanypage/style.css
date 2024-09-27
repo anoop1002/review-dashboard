@@ -1,6 +1,7 @@
 .m_company_container {
     padding: 20px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
   }
@@ -29,5 +30,27 @@
   
   .m_search_field input::placeholder {
     color: #888;
+  }
+
+/*  */
+  .company-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .company-table th, .company-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .company-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  .company-table tr:nth-child(even) {
+    background-color: #f9f9f9;
   }
   

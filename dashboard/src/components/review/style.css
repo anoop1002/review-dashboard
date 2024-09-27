@@ -1,0 +1,10 @@
+.close-btn-container {
+    position: absolute;
+    right: 20px;
+    top: 6px;
+
+    button {
+        width: 20px;
+    }
+}
+

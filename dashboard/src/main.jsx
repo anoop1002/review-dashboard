@@ -6,5 +6,8 @@ import './index.css'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
+    {/* <h1 className="text-3xl underline">
+    Hello world!
+  </h1> */}
   </StrictMode>,
 )
